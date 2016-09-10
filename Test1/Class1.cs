@@ -10,6 +10,7 @@ using System.Drawing.Imaging;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
 namespace Test1
@@ -28,7 +29,7 @@ namespace Test1
             urlBase = "http://portal-dr.epiq11.com/#/search/searchcases";
             userName = "amer\\vsanchez";
             passWord = "Welcome123Epiq!";
-            _driver = new FirefoxDriver();
+            _driver = new ChromeDriver();
             driver = new NgWebDriver(_driver);
             takesScreenshot = _driver as ITakesScreenshot;
             wait = new WebDriverWait(_driver, TimeSpan.FromSeconds(60));
@@ -53,12 +54,10 @@ namespace Test1
             {
                 var caseElement = driver.FindElements(by)[i];
                 var caseName = caseElement.Text;
+
                 caseElement.Click();
-                wait.Until(ExpectedConditions.ElementIsVisible(By.CssSelector(".in-case-search-bar-container")));
-                wait.Until(ExpectedConditions.InvisibilityOfElementLocated(By.CssSelector(".card-loading-container")));
-                driver.WaitForAngular();
-                string fileName = Path.Combine("C:\\evidence\\screenshots", caseName + ".jpg");
-                takesScreenshot.GetScreenshot().SaveAsFile(fileName, ImageFormat.Jpeg);
+                waitForPage();
+                takeScreenShot(caseName);
 
                 Console.WriteLine("********** Case Name " + caseName);
                 if (driver.FindElements(By.Id("iframeContent")).Count > 0)
@@ -79,6 +78,29 @@ namespace Test1
         public void Final()
         {
             driver.Quit();
+        }
+
+        private string cleanString(string name)
+        {
+            Regex rgx = new Regex("[^a-zA-Z0-9 -]");
+            string str = rgx.Replace(name, "");
+            return str;
+        }
+
+        private void takeScreenShot(string caseName)
+        {
+            var caseNameClean = cleanString(caseName);
+            string fileName = Path.Combine("C:\\evidence\\screenshots", caseNameClean + ".jpg");
+            takesScreenshot.GetScreenshot().SaveAsFile(fileName, ImageFormat.Jpeg);
+        }
+
+        private void waitForPage()
+        {
+            driver.WaitForAngular();
+            wait.Until(ExpectedConditions.ElementIsVisible(By.CssSelector(".in-case-search-bar-container")));
+            wait.Until(ExpectedConditions.InvisibilityOfElementLocated(By.CssSelector(".card-loading-container")));
+            wait.Until(ExpectedConditions.InvisibilityOfElementLocated(By.Id("spinner")));
+            driver.WaitForAngular();
         }
     }
 }

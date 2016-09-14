@@ -11,6 +11,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace Test1
@@ -66,7 +67,7 @@ namespace Test1
                     var links = _driver.FindElements(By.CssSelector("#page a"));
                     foreach (var link in links)
                     {
-                        Console.WriteLine("Link Text["+link.Text + "] HREF[" +link.GetAttribute("href")+"]");
+                        Console.WriteLine("Link Text[" + link.Text + "] HREF[" + link.GetAttribute("href") + "]");
                     }
                     driver.SwitchTo().DefaultContent();
                 }
@@ -98,9 +99,11 @@ namespace Test1
         {
             driver.WaitForAngular();
             wait.Until(ExpectedConditions.ElementIsVisible(By.CssSelector(".in-case-search-bar-container")));
+            wait.Until(ExpectedConditions.ElementIsVisible(By.CssSelector(".document-wrapper")));
             wait.Until(ExpectedConditions.InvisibilityOfElementLocated(By.CssSelector(".card-loading-container")));
             wait.Until(ExpectedConditions.InvisibilityOfElementLocated(By.Id("spinner")));
             driver.WaitForAngular();
+            Thread.Sleep(1000);
         }
     }
 }

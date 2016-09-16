@@ -21,8 +21,10 @@ namespace Test1
         NgWebDriver driver;
         IWebDriver _driver;
         ITakesScreenshot takesScreenshot;
+        TextWriter tw;
         WebDriverWait wait;
         string urlBase, userName, passWord;
+        string path = @"C:\file\Links.txt";
 
         [SetUp]
         public void Initial()
@@ -60,14 +62,21 @@ namespace Test1
                 waitForPage();
                 takeScreenShot(caseName);
 
-                Console.WriteLine("********** Case Name " + caseName);
+                if (File.Exists(path))
+                {
+                    tw = new StreamWriter(path, true);
+                    tw.WriteLine("****Case Name : " + caseName);
+                    tw.Close();
+                }
                 if (driver.FindElements(By.Id("iframeContent")).Count > 0)
                 {
                     driver.SwitchTo().Frame("iframeContent");
                     var links = _driver.FindElements(By.CssSelector("#page a"));
                     foreach (var link in links)
                     {
-                        Console.WriteLine("Link Text[" + link.Text + "] HREF[" + link.GetAttribute("href") + "]");
+                        tw = new StreamWriter(path, true);
+                        tw.WriteLine("Link Text[" + link.Text + "] HREF[" + link.GetAttribute("href") + "]");
+                        tw.Close();
                     }
                     driver.SwitchTo().DefaultContent();
                 }

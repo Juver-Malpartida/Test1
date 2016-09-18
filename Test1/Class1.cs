@@ -24,7 +24,8 @@ namespace Test1
         TextWriter tw;
         WebDriverWait wait;
         string urlBase, userName, passWord;
-        string path = @"C:\file\Links.txt";
+        private static readonly log4net.ILog log =
+            log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
 
         [SetUp]
         public void Initial()
@@ -62,21 +63,14 @@ namespace Test1
                 waitForPage();
                 takeScreenShot(caseName);
 
-                if (File.Exists(path))
-                {
-                    tw = new StreamWriter(path, true);
-                    tw.WriteLine("****Case Name : " + caseName);
-                    tw.Close();
-                }
+                log.Info("****Case Name : " + caseName);
                 if (driver.FindElements(By.Id("iframeContent")).Count > 0)
                 {
                     driver.SwitchTo().Frame("iframeContent");
                     var links = _driver.FindElements(By.CssSelector("#page a"));
                     foreach (var link in links)
                     {
-                        tw = new StreamWriter(path, true);
-                        tw.WriteLine("Link Text[" + link.Text + "] HREF[" + link.GetAttribute("href") + "]");
-                        tw.Close();
+                        log.Info("Link Text[" + link.Text + "] HREF[" + link.GetAttribute("href") + "]");
                     }
                     driver.SwitchTo().DefaultContent();
                 }
@@ -88,7 +82,6 @@ namespace Test1
         public void Final()
         {
             driver.Quit();
-
         }
 
         private string cleanString(string name)

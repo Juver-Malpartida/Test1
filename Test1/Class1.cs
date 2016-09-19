@@ -21,7 +21,6 @@ namespace Test1
         NgWebDriver driver;
         IWebDriver _driver;
         ITakesScreenshot takesScreenshot;
-        TextWriter tw;
         WebDriverWait wait;
         string urlBase, userName, passWord;
         private static readonly log4net.ILog log =
